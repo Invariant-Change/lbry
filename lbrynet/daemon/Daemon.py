@@ -574,8 +574,8 @@ class Daemon(AuthJSONRPCServer):
                 wallet=wallet,
                 is_generous=conf.settings['is_generous_host'],
                 external_ip=self.platform['ip'],
-                storage=self.storage
-            )
+                storage=self.storage,
+                download_mirrors=conf.settings['download_mirrors'])
             self.startup_status = STARTUP_STAGES[2]
 
         d.addCallback(create_session)
