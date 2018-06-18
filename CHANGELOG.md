@@ -25,7 +25,7 @@ at anytime.
   *
 
 ### Added
-  *
+  * ability to download from HTTP mirrors by setting `download_mirrors`
   *
 
 ### Removed
