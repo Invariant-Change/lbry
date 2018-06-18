@@ -25,7 +25,7 @@ at anytime.
   * skip ignored peers from iterative lookups instead of blocking the peer who returned them to us too
 
 ### Added
-  *
+  * ability to download from HTTP mirrors by setting `download_mirrors`
   *
 
 ### Removed
