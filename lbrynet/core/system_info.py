@@ -2,25 +2,26 @@ import platform
 import json
 import subprocess
 import os
-
-from urllib2 import urlopen, URLError
+from urllib.request import urlopen
+from urllib.error import URLError
 from lbryschema import __version__ as lbryschema_version
 from lbrynet import build_type, __version__ as lbrynet_version
 from lbrynet.conf import ROOT_DIR
 
 
 def get_lbrynet_version():
+    version = lbrynet_version
     if build_type.BUILD == "dev":
         try:
             with open(os.devnull, 'w') as devnull:
                 git_dir = ROOT_DIR + '/.git'
-                return subprocess.check_output(
+                version = subprocess.check_output(
                     ['git', '--git-dir='+git_dir, 'describe', '--dirty', '--always'],
                     stderr=devnull
-                ).strip().lstrip('v')
+                )
         except (subprocess.CalledProcessError, OSError):
-            print "failed to get version from git"
-    return lbrynet_version
+            print("failed to get version from git")
+    return version.decode('utf-8')
 
 
 def get_platform(get_ip=True):
@@ -49,4 +50,5 @@ def get_platform(get_ip=True):
         except (URLError, AssertionError):
             p['ip'] = "Could not determine IP"
 
+    print(p)
     return p

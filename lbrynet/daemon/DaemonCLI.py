@@ -11,8 +11,8 @@ from lbrynet.daemon.Daemon import LOADING_WALLET_CODE, Daemon
 from lbrynet.core.system_info import get_platform
 from jsonrpc.common import RPCError
 from requests.exceptions import ConnectionError
-from urllib2 import URLError, HTTPError
-from httplib import UNAUTHORIZED
+from urllib.error import URLError, HTTPError
+from http.client import UNAUTHORIZED
 
 
 def remove_brackets(key):
@@ -23,7 +23,7 @@ def remove_brackets(key):
 
 def set_flag_vals(flag_names, parsed_args):
     kwargs = OrderedDict()
-    for key, arg in parsed_args.iteritems():
+    for key, arg in parsed_args.items():
         if arg is None:
             continue
         elif key.startswith("--"):
@@ -67,7 +67,7 @@ def main():
         return
 
     elif method in ['version', '--version']:
-        print utils.json_dumps_pretty(get_platform(get_ip=False))
+        print(utils.json_dumps_pretty(get_platform(get_ip=False)))
         return
 
     if method not in Daemon.callable_methods:
@@ -93,7 +93,7 @@ def main():
         api = LBRYAPIClient.get_client()
         status = api.status()
     except (URLError, ConnectionError) as err:
-        if isinstance(err, HTTPError) and err.code == UNAUTHORIZED:
+        if isinstance(err, HTTPError):  #and err.code == UNAUTHORIZED:
             api = AuthAPIClient.config()
             # this can happen if the daemon is using auth with the --http-auth flag
             # when the config setting is to not use it
@@ -111,7 +111,7 @@ def main():
     status_code = status['startup_status']['code']
 
     if status_code != "started" and method not in Daemon.allowed_during_startup:
-        print "Daemon is in the process of starting. Please try again in a bit."
+        print("Daemon is in the process of starting. Please try again in a bit.")
         message = status['startup_status']['message']
         if message:
             if (
@@ -119,35 +119,35 @@ def main():
                 and status['blockchain_status']['blocks_behind'] > 0
             ):
                 message += '. Blocks left: ' + str(status['blockchain_status']['blocks_behind'])
-            print "  Status: " + message
+            print("  Status: " + message)
         return 1
 
     # TODO: check if port is bound. Error if its not
 
     try:
         result = api.call(method, kwargs)
-        if isinstance(result, basestring):
+        if isinstance(result, str):
             # printing the undumped string is prettier
-            print result
+            print(result)
         else:
-            print utils.json_dumps_pretty(result)
+            print(utils.json_dumps_pretty(result))
     except (RPCError, KeyError, JSONRPCException, HTTPError) as err:
         if isinstance(err, HTTPError):
             error_body = err.read()
             try:
                 error_data = json.loads(error_body)
             except ValueError:
-                print (
+                print((
                     "There was an error, and the response was not valid JSON.\n" +
                     "Raw JSONRPC response:\n" + error_body
-                )
+                ))
                 return 1
 
             print_error(error_data['error']['message'] + "\n", suggest_help=False)
 
             if 'data' in error_data['error'] and 'traceback' in error_data['error']['data']:
-                print "Here's the traceback for the error you encountered:"
-                print "\n".join(error_data['error']['data']['traceback'])
+                print("Here's the traceback for the error you encountered:")
+                print("\n".join(error_data['error']['data']['traceback']))
 
             print_help_for_command(method)
         elif isinstance(err, RPCError):
@@ -155,13 +155,13 @@ def main():
             # print_help_for_command(method)
         else:
             print_error("Something went wrong\n", suggest_help=False)
-            print str(err)
+            print(str(err))
 
         return 1
 
 
 def guess_type(x, key=None):
-    if not isinstance(x, (unicode, str)):
+    if not isinstance(x, str):
         return x
     if key in ('uri', 'channel_name', 'name', 'file_name', 'download_directory'):
         return x
@@ -182,18 +182,18 @@ def guess_type(x, key=None):
 
 
 def print_help_suggestion():
-    print "See `{} help` for more information.".format(os.path.basename(sys.argv[0]))
+    print("See `{} help` for more information.".format(os.path.basename(sys.argv[0])))
 
 
 def print_error(message, suggest_help=True):
     error_style = colorama.Style.BRIGHT + colorama.Fore.RED
-    print error_style + "ERROR: " + message + colorama.Style.RESET_ALL
+    print(error_style + "ERROR: " + message + colorama.Style.RESET_ALL)
     if suggest_help:
         print_help_suggestion()
 
 
 def print_help():
-    print "\n".join([
+    print("\n".join([
         "NAME",
         "   lbrynet-cli - LBRY command line client.",
         "",
@@ -206,13 +206,13 @@ def print_help():
         "   lbrynet-cli --conf ~/l1.conf status  # like above but using ~/l1.conf as config file",
         "   lbrynet-cli resolve_name what        # resolve a name",
         "   lbrynet-cli help resolve_name        # get help for a command",
-    ])
+    ]))
 
 
 def print_help_for_command(command):
     fn = Daemon.callable_methods.get(command)
     if fn:
-        print "Help for %s method:\n%s" % (command, fn.__doc__)
+        print("Help for %s method:\n%s" % (command, fn.__doc__))
 
 
 def wrap_list_to_term_width(l, width=None, separator=', ', prefix=''):

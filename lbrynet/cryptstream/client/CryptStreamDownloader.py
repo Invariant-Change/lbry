@@ -1,6 +1,6 @@
 import binascii
 import logging
-from zope.interface import implements
+from zope.interface import implements, implementer
 from lbrynet.interfaces import IStreamDownloader
 from lbrynet.core.client.BlobRequester import BlobRequester
 from lbrynet.core.client.ConnectionManager import ConnectionManager
@@ -33,10 +33,10 @@ class CurrentlyStoppingError(Exception):
 class CurrentlyStartingError(Exception):
     pass
 
-
+@implementer(IStreamDownloader)
 class CryptStreamDownloader(object):
 
-    implements(IStreamDownloader)
+    # implements(IStreamDownloader)
 
     def __init__(self, peer_finder, rate_limiter, blob_manager, payment_rate_manager, wallet,
                  key, stream_name):

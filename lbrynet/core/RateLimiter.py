@@ -1,6 +1,6 @@
 import logging
 
-from zope.interface import implements
+from zope.interface import implements, implementer
 from lbrynet.interfaces import IRateLimiter
 from twisted.internet import task
 
@@ -45,11 +45,11 @@ class DummyRateLimiter(object):
         self.ul_bytes_this_second += num_bytes
         self.total_ul_bytes += num_bytes
 
-
+@implementer(IRateLimiter)
 class RateLimiter(object):
     """This class ensures that upload and download rates don't exceed specified maximums"""
 
-    implements(IRateLimiter)
+    # implements(IRateLimiter)
 
     #called by main application
 

@@ -11,7 +11,7 @@ from lbrynet.core.Error import ConnectionClosedBeforeResponseError, NoResponseEr
 from lbrynet.core.Error import DownloadCanceledError, MisbehavingPeerError
 from lbrynet.core.Error import RequestCanceledError
 from lbrynet.interfaces import IRequestSender, IRateLimited
-from zope.interface import implements
+from zope.interface import implements, implementer
 
 
 log = logging.getLogger(__name__)
@@ -22,9 +22,9 @@ def encode_decimal(obj):
         return float(obj)
     raise TypeError(repr(obj) + " is not JSON serializable")
 
-
+@implementer(IRateLimited, IRequestSender)
 class ClientProtocol(Protocol, TimeoutMixin):
-    implements(IRequestSender, IRateLimited)
+    # implements(IRequestSender, IRateLimited)
     ######### Protocol #########
     PROTOCOL_TIMEOUT = 30
 

@@ -1,6 +1,6 @@
 import binascii
 
-from zope.interface import implements
+from zope.interface import implements, implementer
 
 from lbrynet.core.StreamDescriptor import save_sd_info
 from lbrynet.cryptstream.client.CryptStreamDownloader import CryptStreamDownloader
@@ -89,9 +89,9 @@ class EncryptedFileDownloader(CryptStreamDownloader):
         return EncryptedFileMetadataHandler(self.stream_hash,
                                             self.storage, download_manager)
 
-
+@implementer(IStreamDownloaderFactory)
 class EncryptedFileDownloaderFactory(object):
-    implements(IStreamDownloaderFactory)
+    # implements(IStreamDownloaderFactory)
 
     def __init__(self, peer_finder, rate_limiter, blob_manager, storage, wallet):
         self.peer_finder = peer_finder

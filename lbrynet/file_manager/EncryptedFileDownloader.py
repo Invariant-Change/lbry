@@ -4,7 +4,7 @@ Download LBRY Files from LBRYnet and save them to disk.
 import logging
 import binascii
 
-from zope.interface import implements
+from zope.interface import implements, implementer
 from twisted.internet import defer
 
 from lbrynet.core.client.StreamProgressManager import FullStreamProgressManager
@@ -151,9 +151,9 @@ class ManagedEncryptedFileDownloader(EncryptedFileSaver):
         return FullStreamProgressManager(self._finished_downloading,
                                          self.blob_manager, download_manager)
 
-
+@implementer(IStreamDownloaderFactory)
 class ManagedEncryptedFileDownloaderFactory(object):
-    implements(IStreamDownloaderFactory)
+    # implements(IStreamDownloaderFactory)
 
     def __init__(self, lbry_file_manager):
         self.lbry_file_manager = lbry_file_manager

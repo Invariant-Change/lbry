@@ -1,10 +1,10 @@
 import logging
-import urlparse
+import urllib.parse
 import json
 import inspect
 
 from decimal import Decimal
-from zope.interface import implements
+from zope.interface import implements, implementer
 from twisted.web import server, resource
 from twisted.internet import defer
 from twisted.python.failure import Failure
@@ -54,7 +54,7 @@ class JSONRPCError(object):
     }
 
     def __init__(self, message, code=CODE_APPLICATION_ERROR, traceback=None, data=None):
-        assert isinstance(code, (int, long)), "'code' must be an int"
+        assert isinstance(code, int), "'code' must be an int"
         assert (data is None or isinstance(data, dict)), "'data' must be None or a dict"
         self.code = code
         if message is None:
@@ -130,9 +130,7 @@ class JSONRPCServerType(type):
         return klass
 
 
-class AuthorizedBase(object):
-    __metaclass__ = JSONRPCServerType
-
+class AuthorizedBase(object, metaclass=JSONRPCServerType):
     @staticmethod
     def deprecated(new_command=None):
         def _deprecated_wrapper(f):
@@ -141,7 +139,7 @@ class AuthorizedBase(object):
             return f
         return _deprecated_wrapper
 
-
+@implementer(resource.IResource)
 class AuthJSONRPCServer(AuthorizedBase):
     """
     Authorized JSONRPC server used as the base class for the LBRY API
@@ -166,7 +164,7 @@ class AuthJSONRPCServer(AuthorizedBase):
         the server will randomize the shared secret and return the new value under the LBRY_SECRET header, which the
         client uses to generate the token for their next request.
     """
-    implements(resource.IResource)
+    # implements(resource.IResource)
 
     isLeaf = True
     allowed_during_startup = []
@@ -405,7 +403,7 @@ class AuthJSONRPCServer(AuthorizedBase):
         return (allowed_server, allowed_port) == (server, port)
 
     def get_server_port(self, origin):
-        parsed = urlparse.urlparse(origin)
+        parsed = urllib.parse.urlparse(origin)
         server_port = parsed.netloc.split(':')
         assert len(server_port) <= 2
         if len(server_port) == 2:

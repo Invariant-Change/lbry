@@ -6,13 +6,13 @@ import logging
 
 from cryptography.hazmat.primitives.ciphers.algorithms import AES
 from twisted.internet import interfaces, defer
-from zope.interface import implements
+from zope.interface import implements, implementer
 from lbrynet.cryptstream.CryptBlob import CryptStreamBlobMaker
 
 
 log = logging.getLogger(__name__)
 
-
+@implementer(interfaces.IConsumer)
 class CryptStreamCreator(object):
     """
     Create a new stream with blobs encrypted by a symmetric cipher.
@@ -22,7 +22,7 @@ class CryptStreamCreator(object):
     the blob is associated with the stream.
     """
 
-    implements(interfaces.IConsumer)
+    # implements(interfaces.IConsumer)
 
     def __init__(self, blob_manager, name=None, key=None, iv_generator=None):
         """@param blob_manager: Object that stores and provides access to blobs.

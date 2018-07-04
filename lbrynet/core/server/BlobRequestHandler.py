@@ -3,7 +3,7 @@ import logging
 from twisted.internet import defer
 from twisted.protocols.basic import FileSender
 from twisted.python.failure import Failure
-from zope.interface import implements
+from zope.interface import implements, implementer
 
 from lbrynet import analytics
 from lbrynet.core.Offer import Offer
@@ -11,9 +11,9 @@ from lbrynet.interfaces import IQueryHandlerFactory, IQueryHandler, IBlobSender
 
 log = logging.getLogger(__name__)
 
-
+@implementer(IQueryHandler)
 class BlobRequestHandlerFactory(object):
-    implements(IQueryHandlerFactory)
+    # implements(IQueryHandlerFactory)
 
     def __init__(self, blob_manager, wallet, payment_rate_manager, analytics_manager):
         self.blob_manager = blob_manager
@@ -34,9 +34,9 @@ class BlobRequestHandlerFactory(object):
     def get_description(self):
         return "Blob Uploader - uploads blobs"
 
-
+@implementer(IQueryHandler, IBlobSender)
 class BlobRequestHandler(object):
-    implements(IQueryHandler, IBlobSender)
+    # implements(IQueryHandler, IBlobSender)
     PAYMENT_RATE_QUERY = 'blob_data_payment_rate'
     BLOB_QUERY = 'requested_blob'
     AVAILABILITY_QUERY = 'requested_blobs'

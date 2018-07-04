@@ -1,5 +1,5 @@
 import logging
-from zope.interface import implements
+from zope.interface import implements, implementer
 from lbrynet import interfaces
 from lbrynet.core.BlobInfo import BlobInfo
 from lbrynet.core.client.BlobRequester import BlobRequester
@@ -13,9 +13,9 @@ from twisted.internet.task import LoopingCall
 
 log = logging.getLogger(__name__)
 
-
+@implementer(interfaces.IMetadataHandler)
 class SingleBlobMetadataHandler(object):
-    implements(interfaces.IMetadataHandler)
+    # implements(interfaces.IMetadataHandler)
 
     def __init__(self, blob_hash, download_manager):
         self.blob_hash = blob_hash

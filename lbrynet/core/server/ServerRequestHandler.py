@@ -1,19 +1,19 @@
 import json
 import logging
 from twisted.internet import interfaces, defer
-from zope.interface import implements
+from zope.interface import implements, implementer
 from lbrynet.interfaces import IRequestHandler
 
 
 log = logging.getLogger(__name__)
 
-
+@implementer(interfaces.IPushProducer, interfaces.IConsumer, IRequestHandler)
 class ServerRequestHandler(object):
     """This class handles requests from clients. It can upload blobs and
     return request for information about more blobs that are
     associated with streams.
     """
-    implements(interfaces.IPushProducer, interfaces.IConsumer, IRequestHandler)
+    # implements(interfaces.IPushProducer, interfaces.IConsumer, IRequestHandler)
 
     def __init__(self, consumer):
         self.consumer = consumer

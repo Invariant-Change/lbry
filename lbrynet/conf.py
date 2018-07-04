@@ -179,7 +179,7 @@ class Env(envparse.Env):
         self.original_schema = schema
         my_schema = {
             self._convert_key(key): self._convert_value(value)
-            for key, value in schema.items()
+            for key, value in list(schema.items())
             }
         envparse.Env.__init__(self, **my_schema)
 
@@ -291,7 +291,7 @@ ADJUSTABLE_SETTINGS = {
     'reflector_servers': (list, [('reflector2.lbry.io', 5566)], server_list, server_list_reverse),
     'run_reflector_server': (bool, False),
     'sd_download_timeout': (int, 3),
-    'share_usage_data': (bool, True),  # whether to share usage stats and diagnostic info with LBRY
+    'share_usage_data': (bool, False),  # whether to share usage stats and diagnostic info with LBRY
     'peer_search_timeout': (int, 3),
     'use_auth_http': (bool, False),
     'use_upnp': (bool, True),
@@ -335,7 +335,7 @@ class Config(object):
 
         self._data[TYPE_DEFAULT].update(self._fixed_defaults)
         self._data[TYPE_DEFAULT].update(
-            {k: v[1] for (k, v) in self._adjustable_defaults.items()})
+            {k: v[1] for (k, v) in list(self._adjustable_defaults.items())})
 
         if persisted_settings is None:
             persisted_settings = {}
@@ -355,7 +355,7 @@ class Config(object):
         return self.get_current_settings_dict().__repr__()
 
     def __iter__(self):
-        for k in self._data[TYPE_DEFAULT].iterkeys():
+        for k in self._data[TYPE_DEFAULT].keys():
             yield k
 
     def __getitem__(self, name):
@@ -382,7 +382,7 @@ class Config(object):
             raise KeyError('{} in is not a valid data type'.format(data_type))
 
     def get_valid_setting_names(self):
-        return self._data[TYPE_DEFAULT].keys()
+        return list(self._data[TYPE_DEFAULT].keys())
 
     def _is_valid_setting(self, name):
         return name in self.get_valid_setting_names()
@@ -404,7 +404,7 @@ class Config(object):
     def _assert_valid_setting_value(self, name, value):
         if name == "max_key_fee":
             currency = str(value["currency"]).upper()
-            if currency not in self._fixed_defaults['CURRENCIES'].keys():
+            if currency not in list(self._fixed_defaults['CURRENCIES'].keys()):
                 raise InvalidCurrencyError(currency)
         elif name == "download_directory":
             directory = str(value)
@@ -478,7 +478,7 @@ class Config(object):
             self._data[data_type][name] = value
 
     def update(self, updated_settings, data_types=(TYPE_RUNTIME,)):
-        for k, v in updated_settings.iteritems():
+        for k, v in updated_settings.items():
             try:
                 self.set(k, v, data_types=data_types)
             except (KeyError, AssertionError):
@@ -492,7 +492,7 @@ class Config(object):
 
     def get_adjustable_settings_dict(self):
         return {
-            key: val for key, val in self.get_current_settings_dict().iteritems()
+            key: val for key, val in self.get_current_settings_dict().items()
             if key in self._adjustable_defaults
             }
 
@@ -513,7 +513,7 @@ class Config(object):
     @staticmethod
     def _convert_conf_file_lists_reverse(converted):
         rev = {}
-        for k in converted.iterkeys():
+        for k in converted.keys():
             if k in ADJUSTABLE_SETTINGS and len(ADJUSTABLE_SETTINGS[k]) == 4:
                 rev[k] = ADJUSTABLE_SETTINGS[k][3](converted[k])
             else:
@@ -523,7 +523,7 @@ class Config(object):
     @staticmethod
     def _convert_conf_file_lists(decoded):
         converted = {}
-        for k, v in decoded.iteritems():
+        for k, v in decoded.items():
             if k in ADJUSTABLE_SETTINGS and len(ADJUSTABLE_SETTINGS[k]) >= 3:
                 converted[k] = ADJUSTABLE_SETTINGS[k][2](v)
             else:
@@ -567,7 +567,7 @@ class Config(object):
         if 'share_debug_info' in settings_dict:
             settings_dict['share_usage_data'] = settings_dict['share_debug_info']
             del settings_dict['share_debug_info']
-        for key in settings_dict.keys():
+        for key in list(settings_dict.keys()):
             if not self._is_valid_setting(key):
                 log.warning('Ignoring invalid conf file setting: %s', key)
                 del settings_dict[key]
@@ -642,7 +642,7 @@ settings = None
 
 def get_default_env():
     env_defaults = {}
-    for k, v in ADJUSTABLE_SETTINGS.items():
+    for k, v in list(ADJUSTABLE_SETTINGS.items()):
         if len(v) == 3:
             env_defaults[k] = (v[0], None, v[2])
         elif len(v) == 4:

@@ -1,14 +1,14 @@
 import logging
 from twisted.internet import defer
-from zope.interface import implements
+from zope.interface import implements, implementer
 from lbrynet import interfaces
 
 
 log = logging.getLogger(__name__)
 
-
+@implementer(interfaces.IDownloadManager)
 class DownloadManager(object):
-    implements(interfaces.IDownloadManager)
+    # implements(interfaces.IDownloadManager)
 
     def __init__(self, blob_manager):
         self.blob_manager = blob_manager

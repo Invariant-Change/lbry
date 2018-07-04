@@ -1,14 +1,14 @@
 import logging
 from lbrynet.interfaces import IProgressManager
 from twisted.internet import defer
-from zope.interface import implements
+from zope.interface import implements, implementer
 
 
 log = logging.getLogger(__name__)
 
-
+@implementer(IProgressManager)
 class StreamProgressManager(object):
-    implements(IProgressManager)
+    # implements(IProgressManager)
 
     def __init__(self, finished_callback, blob_manager,
                  download_manager, delete_blob_after_finished=False):

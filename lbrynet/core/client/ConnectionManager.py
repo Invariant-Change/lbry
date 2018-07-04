@@ -1,7 +1,7 @@
 import random
 import logging
 from twisted.internet import defer, reactor
-from zope.interface import implements
+from zope.interface import implements, implementer
 from lbrynet import interfaces
 from lbrynet import conf
 from lbrynet.core.client.ClientProtocol import ClientProtocolFactory
@@ -17,9 +17,9 @@ class PeerConnectionHandler(object):
         self.factory = factory
         self.connection = None
 
-
+@implementer(interfaces.IConnectionManager)
 class ConnectionManager(object):
-    implements(interfaces.IConnectionManager)
+    # implements(interfaces.IConnectionManager)
     MANAGE_CALL_INTERVAL_SEC = 5
     TCP_CONNECT_TIMEOUT = 15
 

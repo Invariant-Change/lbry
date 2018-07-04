@@ -4,12 +4,12 @@ import errno
 from collections import deque
 
 from twisted.internet import protocol, defer
-from error import BUILTIN_EXCEPTIONS, UnknownRemoteException, TimeoutError, TransportNotConnected
+from .error import BUILTIN_EXCEPTIONS, UnknownRemoteException, TimeoutError, TransportNotConnected
 
-import constants
-import encoding
-import msgtypes
-import msgformat
+from . import constants
+from . import encoding
+from . import msgtypes
+from . import msgformat
 
 log = logging.getLogger(__name__)
 
@@ -219,7 +219,7 @@ class KademliaProtocol(protocol.DatagramProtocol):
                 self._partialMessages[msgID] = {}
             self._partialMessages[msgID][seqNumber] = datagram[26:]
             if len(self._partialMessages[msgID]) == totalPackets:
-                keys = self._partialMessages[msgID].keys()
+                keys = list(self._partialMessages[msgID].keys())
                 keys.sort()
                 data = ''
                 for key in keys:
@@ -432,7 +432,7 @@ class KademliaProtocol(protocol.DatagramProtocol):
                     result = func(senderContact, *a)
                 else:
                     result = func()
-            except Exception, e:
+            except Exception as e:
                 log.exception("error handling request for %s:%i %s", senderContact.address, senderContact.port, method)
                 df.errback(e)
             else:
@@ -450,7 +450,7 @@ class KademliaProtocol(protocol.DatagramProtocol):
             log.error("deferred timed out, but is not present in sent messages list!")
             return
         remoteContact, df, timeout_call, timeout_canceller, method, args = self._sentMessages[messageID]
-        if self._partialMessages.has_key(messageID):
+        if messageID in self._partialMessages:
             # We are still receiving this message
             self._msgTimeoutInProgress(messageID, timeout_canceller, remoteContact, df, method, args)
             return
@@ -476,7 +476,7 @@ class KademliaProtocol(protocol.DatagramProtocol):
 
     def _hasProgressBeenMade(self, messageID):
         return (
-            self._partialMessagesProgress.has_key(messageID) and
+            messageID in self._partialMessagesProgress and
             (
                 len(self._partialMessagesProgress[messageID]) !=
                 len(self._partialMessages[messageID])

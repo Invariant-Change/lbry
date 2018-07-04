@@ -199,7 +199,7 @@ class Daemon(AuthJSONRPCServer):
         self.disable_max_key_fee = conf.settings['disable_max_key_fee']
         self.download_timeout = conf.settings['download_timeout']
         self.run_reflector_server = conf.settings['run_reflector_server']
-        self.wallet_type = conf.settings['wallet']
+        self.wallet_type = TORBA_WALLET
         self.delete_blobs_on_remove = conf.settings['delete_blobs_on_remove']
         self.peer_port = conf.settings['peer_port']
         self.reflector_port = conf.settings['reflector_port']

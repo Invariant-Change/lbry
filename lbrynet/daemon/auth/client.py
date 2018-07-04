@@ -1,10 +1,10 @@
 import os
 import json
-import urlparse
+import urllib.parse
 import requests
 from requests.cookies import RequestsCookieJar
 import logging
-from jsonrpc.proxy import JSONRPCProxy
+# from jsonrpc.proxy import JSONRPCProxy
 from lbrynet import conf
 from lbrynet.daemon.auth.util import load_api_keys, APIKey, API_KEY_NAME, get_auth_message
 
@@ -107,7 +107,7 @@ class AuthAPIClient(object):
 
         if auth is None and connection is None and cookies is None and url is None:
             # This is a new client instance, start an authenticated session
-            url = urlparse.urlparse(service_url)
+            url = urllib.parse.urlparse(service_url)
             conn = requests.Session()
             req = requests.Request(method='POST',
                                    url=service_url,
@@ -135,5 +135,5 @@ class LBRYAPIClient(object):
     def get_client():
         if not conf.settings:
             conf.initialize_settings()
-        return AuthAPIClient.config() if conf.settings['use_auth_http'] else \
-            JSONRPCProxy.from_url(conf.settings.get_api_connection_string())
+        return AuthAPIClient.config() if conf.settings['use_auth_http'] else None # \
+            # JSONRPCProxy.from_url(conf.settings.get_api_connection_string())

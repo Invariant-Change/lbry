@@ -7,7 +7,7 @@
 # The docstrings in this module contain epytext markup; API documentation
 # may be created by processing this file with epydoc: http://epydoc.sf.net
 
-import msgtypes
+from . import msgtypes
 
 
 class MessageTranslator(object):
@@ -42,8 +42,8 @@ class MessageTranslator(object):
 
 class DefaultFormat(MessageTranslator):
     """ The default on-the-wire message format for this library """
-    typeRequest, typeResponse, typeError = range(3)
-    headerType, headerMsgID, headerNodeID, headerPayload, headerArgs = range(5)  # TODO: make str
+    typeRequest, typeResponse, typeError = list(range(3))
+    headerType, headerMsgID, headerNodeID, headerPayload, headerArgs = list(range(5))  # TODO: make str
 
     @staticmethod
     def get(primitive, key):

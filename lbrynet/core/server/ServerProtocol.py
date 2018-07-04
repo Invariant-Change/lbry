@@ -2,13 +2,13 @@ import logging
 from twisted.internet import interfaces, error
 from twisted.internet.protocol import Protocol, ServerFactory
 from twisted.python import failure
-from zope.interface import implements
+from zope.interface import implements, implementer
 from lbrynet.core.server.ServerRequestHandler import ServerRequestHandler
 
 
 log = logging.getLogger(__name__)
 
-
+@implementer(interfaces.IConsumer)
 class ServerProtocol(Protocol):
     """ServerProtocol needs to:
 
@@ -24,7 +24,7 @@ class ServerProtocol(Protocol):
     10) Pause/resume production when told by the rate limiter
     """
 
-    implements(interfaces.IConsumer)
+    # implements(interfaces.IConsumer)
 
     #Protocol stuff
 

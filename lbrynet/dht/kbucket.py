@@ -1,7 +1,7 @@
 import logging
-import constants
-from distance import Distance
-from error import BucketFull
+from . import constants
+from .distance import Distance
+from .error import BucketFull
 
 log = logging.getLogger(__name__)
 
@@ -136,7 +136,7 @@ class KBucket(object):
         @rtype: bool
         """
         if isinstance(key, str):
-            key = long(key.encode('hex'), 16)
+            key = int(key.encode('hex'), 16)
         return self.rangeMin <= key < self.rangeMax
 
     def __len__(self):

@@ -1,12 +1,12 @@
 import binascii
-from zope.interface import implements
+from zope.interface import implements, implementer
 from twisted.internet import defer
 from lbrynet.cryptstream.CryptBlob import StreamBlobDecryptor
 from lbrynet.interfaces import IBlobHandler
 
-
+@implementer(IBlobHandler)
 class CryptBlobHandler(object):
-    implements(IBlobHandler)
+    # implements(IBlobHandler)
 
     def __init__(self, key, write_func):
         self.key = key

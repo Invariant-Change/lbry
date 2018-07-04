@@ -6,18 +6,18 @@
 # may be created by processing this file with epydoc: http://epydoc.sf.net
 
 import random
-from zope.interface import implements
+from zope.interface import implements, implementer
 from twisted.internet import defer
-import constants
-import kbucket
-from error import TimeoutError
-from distance import Distance
-from interface import IRoutingTable
+from . import constants
+from . import kbucket
+from .error import TimeoutError
+from .distance import Distance
+from .interface import IRoutingTable
 import logging
 
 log = logging.getLogger(__name__)
 
-
+@implementer(IRoutingTable)
 class TreeRoutingTable(object):
     """ This class implements a routing table used by a Node class.
 
@@ -33,7 +33,7 @@ class TreeRoutingTable(object):
     C{PING} RPC-based k-bucket eviction algorithm described in section 2.2 of
     that paper.
     """
-    implements(IRoutingTable)
+    # implements(IRoutingTable)
 
     def __init__(self, parentNodeID, getTime=None):
         """
