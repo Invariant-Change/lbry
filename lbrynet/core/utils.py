@@ -8,12 +8,14 @@ import traceback
 import functools
 import logging
 import pkg_resources
+import codecs
 from twisted.python.failure import Failure
 from twisted.internet import defer
 from lbryschema.claim import ClaimDict
 from lbrynet.core.cryptoutils import get_lbry_hash_obj
 
 log = logging.getLogger(__name__)
+rot13 = lambda s : codecs.getencoder("rot-13")(s)[0]
 
 # digest_size is in bytes, and blob hashes are hex encoded
 blobhash_length = get_lbry_hash_obj().digest_size * 2
@@ -89,11 +91,11 @@ def version_is_greater_than(a, b):
 
 
 def deobfuscate(obfustacated):
-    return base64.b64decode(obfustacated.decode('rot13'))
+    return base64.b64decode(rot13(obfustacated))
 
 
 def obfuscate(plain):
-    return base64.b64encode(plain).encode('rot13')
+    return rot13(base64.b64encode(plain))
 
 
 def check_connection(server="lbry.io", port=80, timeout=2):

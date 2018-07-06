@@ -1,7 +1,5 @@
-from zope.interface import implementer
 from decimal import Decimal
 from lbrynet import conf
-from lbrynet.interfaces import INegotiationStrategy
 from lbrynet.core.Offer import Offer
 from lbrynet.core.PriceModel import MeanAvailabilityWeightedPrice, ZeroPrice
 
@@ -14,7 +12,7 @@ class Strategy(object):
     """
     Base for negotiation strategies
     """
-    implementer(INegotiationStrategy)
+    # implementer(INegotiationStrategy)
 
     def __init__(self, price_model, max_rate, min_rate, is_generous=None):
         self.price_model = price_model
@@ -100,7 +98,7 @@ class BasicAvailabilityWeightedStrategy(Strategy):
     accepted or a threshold is reached
 
     """
-    implementer(INegotiationStrategy)
+    # implementer(INegotiationStrategy)
 
     def __init__(self, blob_tracker, acceleration=1.25,
                  deceleration=0.9, max_rate=None,
@@ -137,7 +135,7 @@ class BasicAvailabilityWeightedStrategy(Strategy):
 
 
 class OnlyFreeStrategy(Strategy):
-    implementer(INegotiationStrategy)
+    # implementer(INegotiationStrategy)
     def __init__(self, *args, **kwargs):
         price_model = ZeroPrice()
         Strategy.__init__(self, price_model, 0.0, 0.0, True)

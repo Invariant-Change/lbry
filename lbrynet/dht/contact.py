@@ -1,10 +1,11 @@
 import ipaddress
 from lbrynet.dht import constants
+from functools import reduce
 
 
 def is_valid_ipv4(address):
     try:
-        ip = ipaddress.ip_address(address.decode())  # this needs to be unicode, thus the decode()
+        ip = ipaddress.ip_address(address)  # this needs to be unicode, thus the decode()
         return ip.version == 4
     except ipaddress.AddressValueError:
         return False
@@ -171,7 +172,7 @@ class ContactManager(object):
         self._rpc_failures = {}
 
     def get_contact(self, id, address, port):
-        for contact in self._contacts.itervalues():
+        for contact in self._contacts.values():
             if contact.id == id and contact.address == address and contact.port == port:
                 return contact
 

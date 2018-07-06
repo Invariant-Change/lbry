@@ -1,4 +1,3 @@
-from __future__ import print_function
 from .error import DecodeError
 
 
@@ -51,7 +50,7 @@ class Bencode(Encoding):
         @return: The encoded data
         @rtype: str
         """
-        if isinstance(data, (int, long)):
+        if isinstance(data, int):
             return 'i%de' % data
         elif isinstance(data, str):
             return '%d:%s' % (len(data), data)
@@ -62,7 +61,7 @@ class Bencode(Encoding):
             return 'l%se' % encodedListItems
         elif isinstance(data, dict):
             encodedDictItems = ''
-            keys = data.keys()
+            keys = list(data.keys())
             keys.sort()
             for key in keys:
                 encodedDictItems += self.encode(key)  # TODO: keys should always be bytestrings
@@ -127,8 +126,8 @@ class Bencode(Encoding):
             splitPos = data[startIndex:].find(':') + startIndex
             try:
                 length = int(data[startIndex:splitPos])
-            except ValueError:
-                raise DecodeError()
+            except ValueError as e:
+                raise DecodeError(e)
             startIndex = splitPos + 1
             endPos = startIndex + length
             bytes = data[startIndex:endPos]

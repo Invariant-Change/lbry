@@ -13,7 +13,7 @@ import argparse
 import logging.handlers
 
 from twisted.internet import defer, reactor
-from jsonrpc.proxy import JSONRPCProxy
+# from jsonrpc.proxy import JSONRPCProxy
 
 from lbrynet import analytics
 from lbrynet import conf
@@ -66,20 +66,20 @@ def start():
     if args.version:
         version = system_info.get_platform(get_ip=False)
         version['installation_id'] = conf.settings.installation_id
-        print utils.json_dumps_pretty(version)
+        print(utils.json_dumps_pretty(version))
         return
 
     lbrynet_log = conf.settings.get_log_filename()
     log_support.configure_logging(lbrynet_log, not args.quiet, args.verbose)
     log.debug('Final Settings: %s', conf.settings.get_current_settings_dict())
 
-    try:
-        log.debug('Checking for an existing lbrynet daemon instance')
-        JSONRPCProxy.from_url(conf.settings.get_api_connection_string()).status()
-        log.info("lbrynet-daemon is already running")
-        return
-    except Exception:
-        log.debug('No lbrynet instance found, continuing to start')
+    # try:
+    #     log.debug('Checking for an existing lbrynet daemon instance')
+    #     # JSONRPCProxy.from_url(conf.settings.get_api_connection_string()).status()
+    #     log.info("lbrynet-daemon is already running")
+    #     return
+    # except Exception:
+    #     log.debug('No lbrynet instance found, continuing to start')
 
     log.info("Starting lbrynet-daemon from command line")
 

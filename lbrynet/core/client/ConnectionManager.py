@@ -15,9 +15,8 @@ class PeerConnectionHandler(object):
         self.factory = factory
         self.connection = None
 
-
 class ConnectionManager(object):
-    #implements(interfaces.IConnectionManager)
+    # implements(interfaces.IConnectionManager)
     MANAGE_CALL_INTERVAL_SEC = 5
     TCP_CONNECT_TIMEOUT = 15
 

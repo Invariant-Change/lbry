@@ -1,17 +1,17 @@
 import json
 import logging
-from twisted.internet import defer
+from twisted.internet import interfaces, defer
+from lbrynet.interfaces import IRequestHandler
 
 
 log = logging.getLogger(__name__)
-
 
 class ServerRequestHandler(object):
     """This class handles requests from clients. It can upload blobs and
     return request for information about more blobs that are
     associated with streams.
     """
-    #implements(interfaces.IPushProducer, interfaces.IConsumer, IRequestHandler)
+    # implements(interfaces.IPushProducer, interfaces.IConsumer, IRequestHandler)
 
     def __init__(self, consumer):
         self.consumer = consumer

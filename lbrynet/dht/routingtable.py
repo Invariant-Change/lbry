@@ -15,7 +15,6 @@ import logging
 
 log = logging.getLogger(__name__)
 
-
 class TreeRoutingTable(object):
     """ This class implements a routing table used by a Node class.
 
@@ -31,7 +30,7 @@ class TreeRoutingTable(object):
     C{PING} RPC-based k-bucket eviction algorithm described in section 2.2 of
     that paper.
     """
-    #implements(IRoutingTable)
+    # implements(IRoutingTable)
 
     def __init__(self, parentNodeID, getTime=None):
         """

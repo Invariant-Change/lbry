@@ -200,7 +200,7 @@ class Node(MockKademliaHelper):
         if not known_node_resolution:
             known_node_resolution = yield _resolve_seeds()
             # we are one of the seed nodes, don't add ourselves
-            if (self.externalIP, self.port) in known_node_resolution.itervalues():
+            if (self.externalIP, self.port) in iter(known_node_resolution.values()):
                 del known_node_resolution[(self.externalIP, self.port)]
                 known_node_addresses.remove((self.externalIP, self.port))
 
@@ -213,7 +213,7 @@ class Node(MockKademliaHelper):
         def _initialize_routing():
             bootstrap_contacts = []
             contact_addresses = {(c.address, c.port): c for c in self.contacts}
-            for (host, port), ip_address in known_node_resolution.iteritems():
+            for (host, port), ip_address in known_node_resolution.items():
                 if (host, port) not in contact_addresses:
                     # Create temporary contact information for the list of addresses of known nodes
                     # The contact node id will be set with the responding node id when we initialize it to None
@@ -228,7 +228,7 @@ class Node(MockKademliaHelper):
             if not bootstrap_contacts:
                 log.warning("no bootstrap contacts to ping")
             ping_result = yield _ping_contacts(bootstrap_contacts)
-            shortlist = ping_result.keys()
+            shortlist = list(ping_result.keys())
             if not shortlist:
                 log.warning("failed to ping %i bootstrap contacts", len(bootstrap_contacts))
                 defer.returnValue(None)
@@ -332,9 +332,7 @@ class Node(MockKademliaHelper):
         if not self.externalIP:
             raise Exception("Cannot determine external IP: %s" % self.externalIP)
         stored_to = yield DeferredDict({contact: self.storeToContact(blob_hash, contact) for contact in contacts})
-        contacted_node_ids = map(
-            lambda contact: contact.id.encode('hex'), filter(lambda contact: stored_to[contact], stored_to.keys())
-        )
+        contacted_node_ids = [contact.id.encode('hex') for contact in [contact for contact in list(stored_to.keys()) if stored_to[contact]]]
         log.debug("Stored %s to %i of %i attempted peers", binascii.hexlify(blob_hash),
                   len(contacted_node_ids), len(contacts))
         defer.returnValue(contacted_node_ids)

@@ -20,9 +20,8 @@ def encode_decimal(obj):
         return float(obj)
     raise TypeError(repr(obj) + " is not JSON serializable")
 
-
 class ClientProtocol(Protocol, TimeoutMixin):
-    #implements(IRequestSender, IRateLimited)
+    # implements(IRequestSender, IRateLimited)
     ######### Protocol #########
     PROTOCOL_TIMEOUT = 30
 
@@ -114,6 +113,7 @@ class ClientProtocol(Protocol, TimeoutMixin):
             d.errback(err)
             ds.append(d)
         if self._blob_download_request is not None:
+            self._blob_download_request.cancel(err)
             ds.append(self._blob_download_request.finished_deferred)
             self._blob_download_request.cancel(err)
             self._blob_download_request = None

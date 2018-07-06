@@ -221,7 +221,7 @@ class KademliaProtocol(protocol.DatagramProtocol):
                 self._partialMessages[msgID] = {}
             self._partialMessages[msgID][seqNumber] = datagram[26:]
             if len(self._partialMessages[msgID]) == totalPackets:
-                keys = self._partialMessages[msgID].keys()
+                keys = list(self._partialMessages[msgID].keys())
                 keys.sort()
                 data = ''
                 for key in keys:
@@ -452,7 +452,7 @@ class KademliaProtocol(protocol.DatagramProtocol):
             log.error("deferred timed out, but is not present in sent messages list!")
             return
         remoteContact, df, timeout_call, timeout_canceller, method, args = self._sentMessages[messageID]
-        if self._partialMessages.has_key(messageID):
+        if messageID in self._partialMessages:
             # We are still receiving this message
             self._msgTimeoutInProgress(messageID, timeout_canceller, remoteContact, df, method, args)
             return
@@ -478,7 +478,7 @@ class KademliaProtocol(protocol.DatagramProtocol):
 
     def _hasProgressBeenMade(self, messageID):
         return (
-            self._partialMessagesProgress.has_key(messageID) and
+            messageID in self._partialMessagesProgress and
             (
                 len(self._partialMessagesProgress[messageID]) !=
                 len(self._partialMessages[messageID])

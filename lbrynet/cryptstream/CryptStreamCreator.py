@@ -11,7 +11,6 @@ from lbrynet.cryptstream.CryptBlob import CryptStreamBlobMaker
 
 log = logging.getLogger(__name__)
 
-
 class CryptStreamCreator(object):
     """
     Create a new stream with blobs encrypted by a symmetric cipher.
@@ -21,7 +20,7 @@ class CryptStreamCreator(object):
     the blob is associated with the stream.
     """
 
-    #implements(interfaces.IConsumer)
+    # implements(interfaces.IConsumer)
 
     def __init__(self, blob_manager, name=None, key=None, iv_generator=None):
         """@param blob_manager: Object that stores and provides access to blobs.

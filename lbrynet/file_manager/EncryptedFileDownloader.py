@@ -149,9 +149,8 @@ class ManagedEncryptedFileDownloader(EncryptedFileSaver):
         return FullStreamProgressManager(self._finished_downloading,
                                          self.blob_manager, download_manager)
 
-
 class ManagedEncryptedFileDownloaderFactory(object):
-    #implements(IStreamDownloaderFactory)
+    # implements(IStreamDownloaderFactory)
 
     def __init__(self, lbry_file_manager):
         self.lbry_file_manager = lbry_file_manager

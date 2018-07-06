@@ -14,10 +14,9 @@ class DummyPeerFinder(object):
     def find_peers_for_blob(self, blob_hash, timeout=None, filter_self=True):
         return defer.succeed([])
 
-
 class DHTPeerFinder(DummyPeerFinder):
     """This class finds peers which have announced to the DHT that they have certain blobs"""
-    #implements(IPeerFinder)
+    # implements(IPeerFinder)
 
     def __init__(self, dht_node, peer_manager):
         """

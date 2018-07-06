@@ -38,7 +38,7 @@ def cache(fn):
 
 
 class BlobRequester(object):
-    #implements(IRequestCreator)
+    # implements(IRequestCreator)
 
     def __init__(self, blob_manager, peer_finder, payment_rate_manager, wallet, download_manager):
         self.blob_manager = blob_manager
@@ -161,7 +161,7 @@ class BlobRequester(object):
         return True
 
     def _get_bad_peers(self):
-        return [p for p in self._peers.iterkeys() if not self._should_send_request_to(p)]
+        return [p for p in self._peers.keys() if not self._should_send_request_to(p)]
 
     def _hash_available(self, blob_hash):
         for peer in self._available_blobs:

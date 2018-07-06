@@ -1,7 +1,6 @@
 from six.moves import UserDict
 from . import constants
 
-
 class DictDataStore(UserDict):
     """ A datastore using an in-memory Python dictionary """
     #implements(IDataStore)

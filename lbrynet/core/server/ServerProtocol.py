@@ -7,7 +7,6 @@ from lbrynet.core.server.ServerRequestHandler import ServerRequestHandler
 
 log = logging.getLogger(__name__)
 
-
 class ServerProtocol(Protocol):
     """ServerProtocol needs to:
 
@@ -23,7 +22,7 @@ class ServerProtocol(Protocol):
     10) Pause/resume production when told by the rate limiter
     """
 
-    #implements(interfaces.IConsumer)
+    # implements(interfaces.IConsumer)
 
     #Protocol stuff
 

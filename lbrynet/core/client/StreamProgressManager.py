@@ -4,9 +4,8 @@ from twisted.internet import defer
 
 log = logging.getLogger(__name__)
 
-
 class StreamProgressManager(object):
-    #implements(IProgressManager)
+    # implements(IProgressManager)
 
     def __init__(self, finished_callback, blob_manager,
                  download_manager, delete_blob_after_finished=False):

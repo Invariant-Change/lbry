@@ -1,14 +1,11 @@
 import logging
 from twisted.internet import defer
-from zope.interface import implements
-from lbrynet.interfaces import IQueryHandlerFactory, IQueryHandler
-
 
 log = logging.getLogger(__name__)
 
 
 class BlobAvailabilityHandlerFactory(object):
-    implements(IQueryHandlerFactory)
+    # implements(IQueryHandlerFactory)
 
     def __init__(self, blob_manager):
         self.blob_manager = blob_manager
@@ -27,7 +24,7 @@ class BlobAvailabilityHandlerFactory(object):
 
 
 class BlobAvailabilityHandler(object):
-    implements(IQueryHandler)
+    # implements(IQueryHandler)
 
     def __init__(self, blob_manager):
         self.blob_manager = blob_manager

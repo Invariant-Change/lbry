@@ -1,12 +1,10 @@
 import logging
 from twisted.internet import defer
 
-
 log = logging.getLogger(__name__)
 
-
 class DownloadManager(object):
-    #implements(interfaces.IDownloadManager)
+    # implements(interfaces.IDownloadManager)
 
     def __init__(self, blob_manager):
         self.blob_manager = blob_manager

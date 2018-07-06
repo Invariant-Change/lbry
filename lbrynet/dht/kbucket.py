@@ -136,7 +136,7 @@ class KBucket(object):
         @rtype: bool
         """
         if isinstance(key, str):
-            key = long(key.encode('hex'), 16)
+            key = int(key.encode('hex'), 16)
         return self.rangeMin <= key < self.rangeMax
 
     def __len__(self):
