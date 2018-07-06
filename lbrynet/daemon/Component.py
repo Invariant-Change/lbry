@@ -1,6 +1,6 @@
 import logging
 from twisted.internet import defer
-from ComponentManager import ComponentManager
+from .ComponentManager import ComponentManager
 
 log = logging.getLogger(__name__)
 

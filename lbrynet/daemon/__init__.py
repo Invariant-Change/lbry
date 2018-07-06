@@ -1,1 +1,1 @@
-import Components  # register Component classes
+from . import Components  # register Component classes

@@ -148,7 +148,7 @@ class AuthorizedBase(object):
             @wraps(fn)
             def _inner(*args, **kwargs):
                 if component_conditionals:
-                    for component_name, condition in component_conditionals.iteritems():
+                    for component_name, condition in component_conditionals.items():
                         if not callable(condition):
                             raise SyntaxError("The specified condition is invalid/not callable")
                         if not (yield condition(args[0].component_manager.get_component(component_name))):
