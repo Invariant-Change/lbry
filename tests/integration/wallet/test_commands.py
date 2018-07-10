@@ -52,7 +52,7 @@ class CommandTestCase(IntegrationTestCase):
 
 class ChannelNewCommandTests(CommandTestCase):
 
-    VERBOSE = True
+    VERBOSE = False
 
     @defer.inlineCallbacks
     def test_new_channel(self):
