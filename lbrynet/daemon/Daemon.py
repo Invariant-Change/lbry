@@ -3098,26 +3098,36 @@ class Daemon(AuthJSONRPCServer):
         return d
 
     @defer.inlineCallbacks
-    def jsonrpc_peer_ping(self, node_id):
+    def jsonrpc_peer_ping(self, node_id, address=None, port=None):
         """
-        Find and ping a peer by node id
+        Send a kademlia ping to the specified peer. If address and port are provided the peer is directly pinged,
+        if not provided the peer is located first.
 
         Usage:
-            peer_ping (<node_id> | --node_id=<node_id>)
+            peer_ping (<node_id> | --node_id=<node_id>) [<address> | --address=<address>] [<port> | --port=<port>]
 
         Options:
-            None
+            --address=<address>     : (str) ip address of the peer
+            --port=<port>           : (int) udp port of the peer
+
 
         Returns:
             (str) pong, or {'error': <error message>} if an error is encountered
         """
 
         contact = None
-        try:
-            contact = yield self.session.dht_node.findContact(node_id.decode('hex'))
-        except TimeoutError:
-            result = {'error': 'timeout finding peer'}
-            defer.returnValue(result)
+        if node_id and address and port:
+            contact = self.session.dht_node.contact_manager.get_contact(node_id.decode('hex'), address, int(port))
+            if not contact:
+                contact = self.session.dht_node.contact_manager.make_contact(
+                    node_id.decode('hex'), address, int(port), self.session.dht_node._protocol
+                )
+        if not contact:
+            try:
+                contact = yield self.session.dht_node.findContact(node_id.decode('hex'))
+            except TimeoutError:
+                result = {'error': 'timeout finding peer'}
+                defer.returnValue(result)
         if not contact:
             defer.returnValue({'error': 'peer not found'})
         try:
@@ -3262,6 +3272,7 @@ class Daemon(AuthJSONRPCServer):
             --blob_timeout=<blob_timeout>   : (int) how long to try downloading from a peer
 
         Returns:
+            (dict) {
             (dict) {
                 'is_available': <bool>,
                 'did_decode': <bool>,
