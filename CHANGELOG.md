@@ -13,7 +13,7 @@ at anytime.
   *
 
 ### Fixed
-  * daemon cli spelling fixes
+  * spelling mistakes in `lbrynet-cli` messages
   *
 
 ### Deprecated
@@ -25,7 +25,7 @@ at anytime.
   * skip ignored peers from iterative lookups instead of blocking the peer who returned them to us too
 
 ### Added
-  *
+  * `address` and `port` arguments to `peer_ping`
   *
 
 ### Removed
