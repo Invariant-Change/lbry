@@ -1,3 +1,4 @@
+import six
 import tempfile
 from types import SimpleNamespace
 from binascii import hexlify
@@ -30,6 +31,8 @@ class FakeAnalytics:
 class FakeBlob:
     def __init__(self):
         self.data = []
+        self.blob_hash = 'abc'
+        self.length = 3
 
     def write(self, data):
         self.data.append(data)
@@ -39,6 +42,12 @@ class FakeBlob:
             return defer.succeed(hexlify(b'a'*48))
         return defer.succeed(None)
 
+    def get_is_verified(self):
+        return True
+
+    def open_for_reading(self):
+        return six.StringIO('foo')
+
 
 class FakeBlobManager:
     def get_blob_creator(self):
@@ -46,6 +55,9 @@ class FakeBlobManager:
 
     def creator_finished(self, blob_info, should_announce):
         pass
+
+    def get_blob(self, sd_hash):
+        return FakeBlob()
 
 
 class FakeSession:
@@ -97,6 +109,7 @@ class CommandTestCase(IntegrationTestCase):
         storage_component = DatabaseComponent(self.daemon.component_manager)
         await d2f(storage_component.start())
         self.daemon.storage = storage_component.storage
+        self.daemon.wallet.old_db = self.daemon.storage
         self.daemon.component_manager.components.add(storage_component)
 
         session_component = SessionComponent(self.daemon.component_manager)
@@ -105,6 +118,7 @@ class CommandTestCase(IntegrationTestCase):
         self.daemon.session = session_component.session
         self.daemon.session.storage = self.daemon.storage
         self.daemon.session.wallet = self.daemon.wallet
+        self.daemon.session.blob_manager.storage = self.daemon.storage
         self.daemon.component_manager.components.add(session_component)
 
         file_manager = FileManager(self.daemon.component_manager)
