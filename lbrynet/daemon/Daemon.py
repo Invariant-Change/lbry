@@ -1622,6 +1622,7 @@ class Daemon(AuthJSONRPCServer):
             }
         """
         tx = yield self.wallet.claim_new_channel(channel_name, amount)
+        self.wallet.save()
         script = tx.outputs[0].script
         result = {
             "success": True,
