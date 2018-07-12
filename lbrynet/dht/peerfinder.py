@@ -48,7 +48,7 @@ class DHTPeerFinder(DummyPeerFinder):
         if timeout:
             finished_deferred.addTimeout(timeout, self.dht_node.clock)
         try:
-            peer_list = yield finished_deferred
+            peer_list, _ = yield finished_deferred
         except defer.TimeoutError:
             log.warning("DHT timed out while looking peers for blob"
                         " %s after %s seconds.", blob_hash, timeout)

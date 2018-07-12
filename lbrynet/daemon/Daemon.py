@@ -2901,7 +2901,21 @@ class Daemon(AuthJSONRPCServer):
             --timeout=<timeout>      : (int) peer search timeout in seconds
 
         Returns:
-            (list) List of contact dictionaries {'host': <peer ip>, 'port': <peer port>, 'node_id': <peer node id>}
+            (dict)
+            {
+                'peers: [
+                            {
+                                'node_id': (str) <peer node id>
+                                'address': (str) <peer ip>,
+                                'port': (int) <peer port>
+                            }, ...
+                        ],
+                'replying_contact': {
+                    'node_id': (str) <peer node id>,
+                    'address': (str) <peer ip>,
+                    'port': (int) <peer port>
+                }
+            }
         """
 
         if not utils.is_valid_blobhash(blob_hash):
@@ -2915,15 +2929,21 @@ class Daemon(AuthJSONRPCServer):
 
         finished_deferred.addTimeout(timeout or conf.settings['peer_search_timeout'], self.session.dht_node.clock)
         finished_deferred.addErrback(trap_timeout)
-        peers = yield finished_deferred
-        results = [
-            {
-                "node_id": node_id.encode('hex'),
-                "host": host,
-                "port": port
+        peers, replying_contact = yield finished_deferred
+        results = {
+            'peers': [
+                {
+                    "node_id": node_id.encode('hex'),
+                    "address": host,
+                    "port": port
+                }
+                for node_id, host, port in peers],
+            'replying_contact': {
+                "node_id": replying_contact.id.encode('hex'),
+                "address": replying_contact.address,
+                "port": replying_contact.port
             }
-            for node_id, host, port in peers
-        ]
+        }
         defer.returnValue(results)
 
     @defer.inlineCallbacks

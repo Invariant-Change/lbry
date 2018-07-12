@@ -22,7 +22,7 @@ import datastore
 import protocol
 from peerfinder import DHTPeerFinder
 from contact import ContactManager
-from iterativefind import iterativeFind
+from iterativefind import iterativeFind, iterativeFindValue
 
 
 log = logging.getLogger(__name__)
@@ -399,8 +399,12 @@ class Node(MockKademliaHelper):
         if len(key) != constants.key_bits / 8:
             raise ValueError("invalid key length!")
 
+        shortlist = self._routingTable.findCloseNodes(key)
+
         # Execute the search
-        find_result = yield self._iterativeFind(key, rpc='findValue')
+        find_d, replying_contact_d = iterativeFindValue(self, shortlist, key)
+        find_result = yield find_d
+        replying_contact = yield replying_contact_d
         if isinstance(find_result, dict):
             # We have found the value; now see who was the closest contact without it...
             # ...and store the key/value pair
@@ -433,7 +437,7 @@ class Node(MockKademliaHelper):
             #         yield closest_node_without_value.store(key, response.response['token'], self.peerPort)
             #     except TimeoutError:
             #         pass
-        defer.returnValue(expanded_peers)
+        defer.returnValue((expanded_peers, replying_contact))
 
     def addContact(self, contact):
         """ Add/update the given contact; simple wrapper for the same method

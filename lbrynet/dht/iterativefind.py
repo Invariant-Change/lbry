@@ -20,6 +20,8 @@ class _IterativeFind(object):
     def __init__(self, node, shortlist, key, rpc):
         self.node = node
         self.finished_deferred = defer.Deferred()
+        # used to return the replying node info for a findValue
+        self.find_value_replying_contact = defer.Deferred()
         # all distance operations in this class only care about the distance
         # to self.key, so this makes it easier to calculate those
         self.distance = Distance(key)
@@ -94,6 +96,7 @@ class _IterativeFind(object):
         if self.is_find_value_request and self.key in result:
             # We have found the value
             self.find_value_result[self.key] = result[self.key]
+            self.find_value_replying_contact.callback(contact)
             self.finished_deferred.callback(self.find_value_result)
         else:
             if self.is_find_value_request:
@@ -120,6 +123,7 @@ class _IterativeFind(object):
             if not self.finished_deferred.called and self.should_stop():
                 self.sortByDistance(self.active_contacts)
                 self.finished_deferred.callback(self.active_contacts[:min(constants.k, len(self.active_contacts))])
+                self.find_value_replying_contact.callback(None)
 
         defer.returnValue(contact.id)
 
@@ -210,3 +214,9 @@ def iterativeFind(node, shortlist, key, rpc):
     helper = _IterativeFind(node, shortlist, key, rpc)
     helper.searchIteration(0)
     return helper.finished_deferred
+
+
+def iterativeFindValue(node, shortlist, key):
+    helper = _IterativeFind(node, shortlist, key, "findValue")
+    helper.searchIteration(0)
+    return helper.finished_deferred, helper.find_value_replying_contact
