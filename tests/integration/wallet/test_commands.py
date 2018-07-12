@@ -25,9 +25,20 @@ class FakeAnalytics:
         pass
 
 
+class FakeBlob:
+    def write(self, data):
+        pass
+
+    def close(self):
+        pass
+
+
 class FakeBlobManager:
     def get_blob_creator(self):
-        return None
+        return FakeBlob()
+
+    def creator_finished(self, blob_info, should_announce):
+        pass
 
 
 class FakeSession:

@@ -2,6 +2,7 @@
 Utilities for turning plain files into LBRY Files.
 """
 
+import six
 import binascii
 import logging
 import os
