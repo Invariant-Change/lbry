@@ -237,7 +237,7 @@ class DHTComponent(Component):
     @defer.inlineCallbacks
     def start(self):
         self.upnp_component = self.component_manager.get_component(UPNP_COMPONENT)
-        self.udp_port, self.peer_port = self.upnp_component.get_redirects()
+        self.peer_port, self.udp_port = self.upnp_component.get_redirects()
         node_id = CS.get_node_id()
         if node_id is None:
             node_id = generate_id()
