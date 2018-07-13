@@ -17,11 +17,11 @@ class TestComponentManager(unittest.TestCase):
              Components.UPnPComponent],
             [Components.DHTComponent,
              Components.WalletComponent],
-            [Components.HashAnnouncer],
+            [Components.HashAnnouncerComponent],
             [Components.SessionComponent],
-            [Components.PeerProtocolServer,
-             Components.StreamIdentifier],
-            [Components.FileManager],
+            [Components.PeerProtocolServerComponent,
+             Components.StreamIdentifierComponent],
+            [Components.FileManagerComponent],
             [Components.ReflectorComponent]
         ]
         self.component_manager = ComponentManager()

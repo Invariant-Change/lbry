@@ -153,9 +153,13 @@ class AuthorizedBase(object):
                     for component_name, condition in component_conditionals.iteritems():
                         if not callable(condition):
                             raise SyntaxError("The specified condition is invalid/not callable")
-                        if not (yield condition(args[0].component_manager.get_component(component_name))):
-                            raise ComponentStartConditionNotMet(
-                                "Not all conditions required to start component are met")
+                        if args[0].component_manager.all_components_running(component_name):
+                            if not (yield condition(args[0].component_manager.get_component(component_name))):
+                                raise ComponentStartConditionNotMet(
+                                    "Not all conditions required to start component are met")
+                        else:
+                            raise ComponentsNotStarted("%s component is not setup.\nConditional cannot be checked"
+                                                       % component_name)
                 if args[0].component_manager.all_components_running(*components):
                     result = yield fn(*args, **kwargs)
                     defer.returnValue(result)

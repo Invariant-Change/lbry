@@ -256,7 +256,7 @@ class DHTComponent(Component):
         yield self.dht_node.stop()
 
 
-class HashAnnouncer(Component):
+class HashAnnouncerComponent(Component):
     component_name = HASH_ANNOUNCER_COMPONENT
     depends_on = [DHT_COMPONENT, DATABASE_COMPONENT]
 
@@ -280,7 +280,7 @@ class HashAnnouncer(Component):
         yield self.hash_announcer.stop()
 
 
-class StreamIdentifier(Component):
+class StreamIdentifierComponent(Component):
     component_name = STREAM_IDENTIFIER_COMPONENT
     depends_on = [SESSION_COMPONENT]
 
@@ -310,7 +310,7 @@ class StreamIdentifier(Component):
         pass
 
 
-class FileManager(Component):
+class FileManagerComponent(Component):
     component_name = FILE_MANAGER_COMPONENT
     depends_on = [SESSION_COMPONENT, STREAM_IDENTIFIER_COMPONENT]
 
@@ -336,7 +336,7 @@ class FileManager(Component):
         yield self.file_manager.stop()
 
 
-class PeerProtocolServer(Component):
+class PeerProtocolServerComponent(Component):
     component_name = PEER_PROTOCOL_SERVER_COMPONENT
     depends_on = [SESSION_COMPONENT]
 
@@ -397,6 +397,7 @@ class ReflectorComponent(Component):
         Component.__init__(self, component_manager)
         self.reflector_server_port = GCS('reflector_port')
         self.run_reflector_server = GCS('run_reflector_server')
+        self.reflector_server = None
 
     @property
     def component(self):
@@ -411,17 +412,17 @@ class ReflectorComponent(Component):
             log.info("Starting reflector server")
             reflector_factory = reflector_server_factory(session.peer_manager, session.blob_manager, file_manager)
             try:
-                self.reflector_server_port = yield reactor.listenTCP(self.reflector_server_port, reflector_factory)
+                self.reflector_server = yield reactor.listenTCP(self.reflector_server_port, reflector_factory)
                 log.info('Started reflector on port %s', self.reflector_server_port)
             except error.CannotListenError as e:
                 log.exception("Couldn't bind reflector to port %d", self.reflector_server_port)
                 raise ValueError("{} lbrynet may already be running on your computer.".format(e))
 
     def stop(self):
-        if self.run_reflector_server and self.reflector_server_port is not None:
+        if self.run_reflector_server and self.reflector_server is not None:
             log.info("Stopping reflector server")
-            if self.reflector_server_port is not None:
-                self.reflector_server_port, p = None, self.reflector_server_port
+            if self.reflector_server is not None:
+                self.reflector_server, p = None, self.reflector_server
                 yield p.stopListening
 
 
