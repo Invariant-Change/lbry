@@ -1,4 +1,5 @@
 import logging
+import customLogger
 
 __version__ = "0.20.3"
 version = tuple(__version__.split('.'))
