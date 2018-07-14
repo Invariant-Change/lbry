@@ -338,7 +338,7 @@ class FileManagerComponent(Component):
 
 class PeerProtocolServerComponent(Component):
     component_name = PEER_PROTOCOL_SERVER_COMPONENT
-    depends_on = [SESSION_COMPONENT]
+    depends_on = [SESSION_COMPONENT, UPNP_COMPONENT]
 
     def __init__(self, component_manager):
         Component.__init__(self, component_manager)
@@ -351,7 +351,8 @@ class PeerProtocolServerComponent(Component):
     @defer.inlineCallbacks
     def start(self):
         query_handlers = {}
-        peer_port = GCS('peer_port')
+        upnp_component = self.component_manager.get_component(UPNP_COMPONENT)
+        peer_port, udp_port = upnp_component.get_redirects()
         session = self.component_manager.get_component(SESSION_COMPONENT)
 
         handlers = [
