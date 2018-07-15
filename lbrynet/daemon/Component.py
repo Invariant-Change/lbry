@@ -44,20 +44,12 @@ class Component(object):
 
     @defer.inlineCallbacks
     def _setup(self):
-        try:
-            result = yield defer.maybeDeferred(self.start)
-            self._running = True
-            defer.returnValue(result)
-        except Exception as err:
-            log.exception("Error setting up %s", self.component_name or self.__class__.__name__)
-            raise err
+        result = yield defer.maybeDeferred(self.start)
+        self._running = True
+        defer.returnValue(result)
 
     @defer.inlineCallbacks
     def _stop(self):
-        try:
-            result = yield defer.maybeDeferred(self.stop)
-            self._running = False
-            defer.returnValue(result)
-        except Exception as err:
-            log.exception("Error stopping %s", self.__class__.__name__)
-            raise err
+        result = yield defer.maybeDeferred(self.stop)
+        self._running = False
+        defer.returnValue(result)
