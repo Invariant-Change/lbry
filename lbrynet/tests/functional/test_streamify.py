@@ -64,8 +64,8 @@ class TestStreamify(TestCase):
 
         self.session = Session(
             conf.ADJUSTABLE_SETTINGS['data_rate'][1], db_dir=self.db_dir, node_id="abcd", peer_finder=self.peer_finder,
-            blob_dir=self.blob_dir, peer_port=5553, use_upnp=False, rate_limiter=self.rate_limiter, wallet=self.wallet,
-            blob_tracker_class=DummyBlobAvailabilityTracker, external_ip="127.0.0.1", dht_node=self.dht_node
+            blob_dir=self.blob_dir, peer_port=5553, rate_limiter=self.rate_limiter, wallet=self.wallet,
+            external_ip="127.0.0.1", dht_node=self.dht_node
         )
 
         self.lbry_file_manager = EncryptedFileManager(self.session, self.sd_identifier)
@@ -103,8 +103,8 @@ class TestStreamify(TestCase):
 
         self.session = Session(
             conf.ADJUSTABLE_SETTINGS['data_rate'][1], db_dir=self.db_dir, node_id="abcd", peer_finder=self.peer_finder,
-            blob_dir=self.blob_dir, peer_port=5553, use_upnp=False, rate_limiter=self.rate_limiter, wallet=self.wallet,
-            blob_tracker_class=DummyBlobAvailabilityTracker, external_ip="127.0.0.1", dht_node=self.dht_node
+            blob_dir=self.blob_dir, peer_port=5553, rate_limiter=self.rate_limiter, wallet=self.wallet,
+            external_ip="127.0.0.1", dht_node=self.dht_node
         )
 
         self.lbry_file_manager = EncryptedFileManager(self.session, self.sd_identifier)

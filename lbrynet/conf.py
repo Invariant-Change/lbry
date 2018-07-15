@@ -290,7 +290,6 @@ ADJUSTABLE_SETTINGS = {
     'reflect_uploads': (bool, True),
     'auto_re_reflect_interval': (int, 86400),  # set to 0 to disable
     'reflector_servers': (list, [('reflector2.lbry.io', 5566)], server_list, server_list_reverse),
-    'run_reflector_server': (bool, False),
     'sd_download_timeout': (int, 3),
     'share_usage_data': (bool, True),  # whether to share usage stats and diagnostic info with LBRY
     'peer_search_timeout': (int, 30),
@@ -302,7 +301,7 @@ ADJUSTABLE_SETTINGS = {
     'lbryum_servers': (list, [('lbryumx1.lbry.io', 50001), ('lbryumx2.lbry.io',
         50001)], server_list, server_list_reverse),
     's3_headers_depth': (int, 96 * 10),   # download headers from s3 when the local height is more than 10 chunks behind
-    'components_to_skip': (list, [])  # components which will be skipped during start-up of daemon
+    'components_to_skip': (list, ['reflector'])  # components which will be skipped during start-up of daemon
 }
 
 

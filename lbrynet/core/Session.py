@@ -31,8 +31,7 @@ class Session(object):
 
     def __init__(self, blob_data_payment_rate, db_dir=None, node_id=None, dht_node_port=None,
                  known_dht_nodes=None, peer_finder=None, hash_announcer=None, blob_dir=None, blob_manager=None,
-                 peer_port=None, use_upnp=True, rate_limiter=None, wallet=None, blob_tracker_class=None,
-                 payment_rate_manager_class=None, is_generous=True, external_ip=None, storage=None,
+                 peer_port=None, rate_limiter=None, wallet=None, external_ip=None, storage=None,
                  dht_node=None, peer_manager=None):
         """@param blob_data_payment_rate: The default payment rate for blob data
 
@@ -75,10 +74,6 @@ class Session(object):
         @param peer_port: The port on which other peers should connect
             to this peer
 
-        @param use_upnp: Whether or not to try to open a hole in the
-            firewall so that outside peers can connect to this peer's
-            peer_port and dht_node_port
-
         @param rate_limiter: An object which keeps track of the amount
             of data transferred to and from this peer, and can limit
             that rate if desired
@@ -100,10 +95,7 @@ class Session(object):
             self.known_dht_nodes = []
         self.blob_dir = blob_dir
         self.blob_manager = blob_manager
-        # self.blob_tracker = None
-        # self.blob_tracker_class = blob_tracker_class or BlobAvailabilityTracker
         self.peer_port = peer_port
-        self.use_upnp = use_upnp
         self.rate_limiter = rate_limiter
         self.external_ip = external_ip
         self.upnp_redirects = []
@@ -111,8 +103,6 @@ class Session(object):
         self.dht_node = dht_node
         self.base_payment_rate_manager = BasePaymentRateManager(blob_data_payment_rate)
         self.payment_rate_manager = OnlyFreePaymentsManager()
-        # self.payment_rate_manager_class = payment_rate_manager_class or NegotiatedPaymentRateManager
-        # self.is_generous = is_generous
         self.storage = storage or SQLiteStorage(self.db_dir)
 
     def setup(self):
@@ -135,14 +125,10 @@ class Session(object):
         """Stop all services"""
         log.info('Stopping session.')
         ds = []
-        # if self.blob_tracker is not None:
-        #     ds.append(defer.maybeDeferred(self.blob_tracker.stop))
         if self.rate_limiter is not None:
             ds.append(defer.maybeDeferred(self.rate_limiter.stop))
         if self.blob_manager is not None:
             ds.append(defer.maybeDeferred(self.blob_manager.stop))
-        # if self.use_upnp is True:
-        #     ds.append(defer.maybeDeferred(self._unset_upnp))
         return defer.DeferredList(ds)
 
     def _setup_other_components(self):
@@ -157,15 +143,6 @@ class Session(object):
                     "TempBlobManager is no longer supported, specify BlobManager or db_dir")
             else:
                 self.blob_manager = DiskBlobManager(self.blob_dir, self.storage, self.dht_node._dataStore)
-
-        # if self.blob_tracker is None:
-        #     self.blob_tracker = self.blob_tracker_class(
-        #         self.blob_manager, self.dht_node.peer_finder, self.dht_node
-        #     )
-        # if self.payment_rate_manager is None:
-        #     self.payment_rate_manager = self.payment_rate_manager_class(
-        #         self.base_payment_rate_manager, self.blob_tracker, self.is_generous
-        #     )
 
         self.rate_limiter.start()
         d = self.blob_manager.setup()

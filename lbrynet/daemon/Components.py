@@ -207,9 +207,7 @@ class SessionComponent(Component):
             dht_node_port=GCS('dht_node_port'),
             known_dht_nodes=GCS('known_dht_nodes'),
             peer_port=GCS('peer_port'),
-            use_upnp=GCS('use_upnp'),
             wallet=self.component_manager.get_component(WALLET_COMPONENT),
-            is_generous=GCS('is_generous_host'),
             external_ip=CS.get_external_ip(),
             storage=self.component_manager.get_component(DATABASE_COMPONENT)
         )
@@ -397,34 +395,33 @@ class ReflectorComponent(Component):
     def __init__(self, component_manager):
         Component.__init__(self, component_manager)
         self.reflector_server_port = GCS('reflector_port')
-        self.run_reflector_server = GCS('run_reflector_server')
         self.reflector_server = None
 
     @property
     def component(self):
-        return self
+        return self.reflector_server
 
     @defer.inlineCallbacks
     def start(self):
+        log.info("Starting reflector server")
+
         session = self.component_manager.get_component(SESSION_COMPONENT)
         file_manager = self.component_manager.get_component(FILE_MANAGER_COMPONENT)
+        reflector_factory = reflector_server_factory(session.peer_manager, session.blob_manager, file_manager)
 
-        if self.run_reflector_server and self.reflector_server_port is not None:
-            log.info("Starting reflector server")
-            reflector_factory = reflector_server_factory(session.peer_manager, session.blob_manager, file_manager)
-            try:
-                self.reflector_server = yield reactor.listenTCP(self.reflector_server_port, reflector_factory)
-                log.info('Started reflector on port %s', self.reflector_server_port)
-            except error.CannotListenError as e:
-                log.exception("Couldn't bind reflector to port %d", self.reflector_server_port)
-                raise ValueError("{} lbrynet may already be running on your computer.".format(e))
+        try:
+            self.reflector_server = yield reactor.listenTCP(self.reflector_server_port, reflector_factory)
+            log.info('Started reflector on port %s', self.reflector_server_port)
+        except error.CannotListenError as e:
+            log.exception("Couldn't bind reflector to port %d", self.reflector_server_port)
+            raise ValueError("{} lbrynet may already be running on your computer.".format(e))
 
+    @defer.inlineCallbacks
     def stop(self):
-        if self.run_reflector_server and self.reflector_server is not None:
+        if self.reflector_server is not None:
             log.info("Stopping reflector server")
-            if self.reflector_server is not None:
-                self.reflector_server, p = None, self.reflector_server
-                yield p.stopListening
+            self.reflector_server, p = None, self.reflector_server
+            yield p.stopListening
 
 
 class UPnPComponent(Component):
@@ -506,6 +503,9 @@ class UPnPComponent(Component):
         log.info("Unsetting upnp for session")
 
         def threaded_unset_upnp():
+            if self.use_upnp is False:
+                log.debug("Not using upnp")
+                return False
             u = miniupnpc.UPnP()
             num_devices_found = u.discover()
             if num_devices_found > 0:
