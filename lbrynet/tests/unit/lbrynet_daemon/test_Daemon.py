@@ -16,7 +16,7 @@ from lbrynet.database.storage import SQLiteStorage
 from lbrynet.daemon.ComponentManager import ComponentManager
 from lbrynet.daemon.Components import DATABASE_COMPONENT, DHT_COMPONENT, WALLET_COMPONENT, STREAM_IDENTIFIER_COMPONENT
 from lbrynet.daemon.Components import HASH_ANNOUNCER_COMPONENT, REFLECTOR_COMPONENT, UPNP_COMPONENT, SESSION_COMPONENT
-from lbrynet.daemon.Components import PEER_PROTOCOL_SERVER_COMPONENT
+from lbrynet.daemon.Components import PEER_PROTOCOL_SERVER_COMPONENT, EXCHANGE_RATE_MANAGER_COMPONENT
 from lbrynet.daemon.Daemon import Daemon as LBRYDaemon
 from lbrynet.file_manager.EncryptedFileDownloader import ManagedEncryptedFileDownloader
 
@@ -148,12 +148,12 @@ class TestFileListSorting(unittest.TestCase):
         component_manager = ComponentManager(
             skip_components=[DATABASE_COMPONENT, DHT_COMPONENT, WALLET_COMPONENT, SESSION_COMPONENT, UPNP_COMPONENT,
                              PEER_PROTOCOL_SERVER_COMPONENT, REFLECTOR_COMPONENT, HASH_ANNOUNCER_COMPONENT,
-                             STREAM_IDENTIFIER_COMPONENT],
-            fileManager=FakeFileManager
+                             STREAM_IDENTIFIER_COMPONENT, EXCHANGE_RATE_MANAGER_COMPONENT],
+            file_manager=FakeFileManager
         )
         component_manager.setup()
         self.test_daemon.component_manager = component_manager
-        self.test_daemon.file_manager = component_manager.get_component("fileManager")
+        self.test_daemon.file_manager = component_manager.get_component("file_manager")
         self.test_daemon.file_manager.lbry_files = self._get_fake_lbry_files()
 
         # Pre-sorted lists of prices and file names in ascending order produced by

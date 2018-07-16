@@ -4,7 +4,7 @@ from twisted.trial import unittest
 from lbrynet.daemon.ComponentManager import ComponentManager
 from lbrynet.daemon.Components import DATABASE_COMPONENT, DHT_COMPONENT, STREAM_IDENTIFIER_COMPONENT
 from lbrynet.daemon.Components import HASH_ANNOUNCER_COMPONENT, REFLECTOR_COMPONENT, UPNP_COMPONENT
-from lbrynet.daemon.Components import PEER_PROTOCOL_SERVER_COMPONENT
+from lbrynet.daemon.Components import PEER_PROTOCOL_SERVER_COMPONENT, EXCHANGE_RATE_MANAGER_COMPONENT
 from lbrynet.daemon import Components
 from lbrynet.tests import mocks
 
@@ -14,6 +14,7 @@ class TestComponentManager(unittest.TestCase):
         mocks.mock_conf_settings(self)
         self.default_components_sort = [
             [Components.DatabaseComponent,
+             Components.ExchangeRateManagerComponent,
              Components.UPnPComponent],
             [Components.DHTComponent,
              Components.WalletComponent],
@@ -33,14 +34,14 @@ class TestComponentManager(unittest.TestCase):
         stages = self.component_manager.sort_components()
 
         for stage_list, sorted_stage_list in zip(stages, self.default_components_sort):
-            self.assertSetEqual(set([type(stage) for stage in stage_list]), set(sorted_stage_list))
+            self.assertEqual([type(stage) for stage in stage_list], sorted_stage_list)
 
     def test_sort_components_reverse(self):
         rev_stages = self.component_manager.sort_components(reverse=True)
         reverse_default_components_sort = reversed(self.default_components_sort)
 
         for stage_list, sorted_stage_list in zip(rev_stages, reverse_default_components_sort):
-            self.assertSetEqual(set([type(stage) for stage in stage_list]), set(sorted_stage_list))
+            self.assertEqual([type(stage) for stage in stage_list], sorted_stage_list)
 
     def test_get_component_not_exists(self):
 
@@ -67,8 +68,8 @@ class TestComponentManagerOverrides(unittest.TestCase):
         new_component_manager = ComponentManager(wallet=FakeWallet)
         fake_wallet = new_component_manager.get_component("wallet")
         # wallet should be an instance of FakeWallet and not WalletComponent from Components.py
-        self.assertEquals(type(fake_wallet), FakeWallet)
-        self.assertNotEquals(type(fake_wallet), Components.WalletComponent)
+        self.assertIsInstance(fake_wallet, FakeWallet)
+        self.assertNotIsInstance(fake_wallet, Components.WalletComponent)
 
     def test_init_with_wrong_overrides(self):
         class FakeRandomComponent(object):
@@ -85,11 +86,12 @@ class TestComponentManagerProperStart(unittest.TestCase):
         mocks.mock_conf_settings(self)
         self.component_manager = ComponentManager(
             skip_components=[DATABASE_COMPONENT, DHT_COMPONENT, HASH_ANNOUNCER_COMPONENT, STREAM_IDENTIFIER_COMPONENT,
-                             PEER_PROTOCOL_SERVER_COMPONENT, REFLECTOR_COMPONENT, UPNP_COMPONENT],
+                             PEER_PROTOCOL_SERVER_COMPONENT, REFLECTOR_COMPONENT, UPNP_COMPONENT,
+                             EXCHANGE_RATE_MANAGER_COMPONENT],
             reactor=self.reactor,
             wallet=mocks.FakeDelayedWallet,
             session=mocks.FakeDelayedSession,
-            fileManager=mocks.FakeDelayedFileManager
+            file_manager=mocks.FakeDelayedFileManager
         )
 
     def tearDown(self):

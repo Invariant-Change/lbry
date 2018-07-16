@@ -442,7 +442,7 @@ class FakeDelayedFileManager(FakeComponent):
         return defer.succeed(True)
 
 class FakeFileManager(FakeComponent):
-    component_name = "fileManager"
+    component_name = "file_manager"
     depends_on = []
 
     @property

@@ -10,6 +10,7 @@ from lbrynet.core.Wallet import LBRYumWallet
 from lbrynet.core.server.BlobRequestHandler import BlobRequestHandlerFactory
 from lbrynet.core.server.ServerProtocol import ServerProtocolFactory
 from lbrynet.daemon.Component import Component
+from lbrynet.daemon.ExchangeRateManager import ExchangeRateManager
 from lbrynet.database.storage import SQLiteStorage
 from lbrynet.dht import node, hashannouncer
 from lbrynet.file_manager.EncryptedFileManager import EncryptedFileManager
@@ -27,12 +28,13 @@ DATABASE_COMPONENT = "database"
 WALLET_COMPONENT = "wallet"
 SESSION_COMPONENT = "session"
 DHT_COMPONENT = "dht"
-HASH_ANNOUNCER_COMPONENT = "hashAnnouncer"
-STREAM_IDENTIFIER_COMPONENT = "streamIdentifier"
-FILE_MANAGER_COMPONENT = "fileManager"
-PEER_PROTOCOL_SERVER_COMPONENT = "peerProtocolServer"
+HASH_ANNOUNCER_COMPONENT = "hash_announcer"
+STREAM_IDENTIFIER_COMPONENT = "stream_identifier"
+FILE_MANAGER_COMPONENT = "file_manager"
+PEER_PROTOCOL_SERVER_COMPONENT = "peer_protocol_server"
 REFLECTOR_COMPONENT = "reflector"
 UPNP_COMPONENT = "upnp"
+EXCHANGE_RATE_MANAGER_COMPONENT = "exchange_rate_manager"
 
 
 class ConfigSettings(object):
@@ -523,3 +525,23 @@ class UPnPComponent(Component):
         d = threads.deferToThread(threaded_unset_upnp)
         d.addErrback(lambda err: str(err))
         return d
+
+
+class ExchangeRateManagerComponent(Component):
+    component_name = EXCHANGE_RATE_MANAGER_COMPONENT
+
+    def __init__(self, component_manager):
+        Component.__init__(self, component_manager)
+        self.exchange_rate_manager = ExchangeRateManager()
+
+    @property
+    def component(self):
+        return self.exchange_rate_manager
+
+    @defer.inlineCallbacks
+    def start(self):
+        yield self.exchange_rate_manager.start()
+
+    @defer.inlineCallbacks
+    def stop(self):
+        yield self.exchange_rate_manager.stop()

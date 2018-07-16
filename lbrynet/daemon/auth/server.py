@@ -156,7 +156,7 @@ class AuthorizedBase(object):
                         if args[0].component_manager.all_components_running(component_name):
                             if not (yield condition(args[0].component_manager.get_component(component_name))):
                                 raise ComponentStartConditionNotMet(
-                                    "Not all conditions required to start component are met")
+                                    "Not all conditions required to do this operation are met")
                         else:
                             raise ComponentsNotStarted("%s component is not setup.\nConditional cannot be checked"
                                                        % component_name)

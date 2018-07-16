@@ -1,7 +1,6 @@
 import logging
 from twisted.internet import defer
 
-from lbrynet import conf
 from lbrynet.core.Error import ComponentStartConditionNotMet
 
 log = logging.getLogger(__name__)
@@ -12,7 +11,6 @@ class ComponentManager(object):
 
     def __init__(self, reactor=None, analytics_manager=None, skip_components=None, **override_components):
         self.skip_components = skip_components or []
-        self.skip_components.extend(conf.settings['components_to_skip'])
 
         self.reactor = reactor
         self.component_classes = {}
@@ -48,6 +46,7 @@ class ComponentManager(object):
                 components.remove(component)
 
         if step:
+            step.sort()
             steps.append(step)
 
         while components:
@@ -63,6 +62,7 @@ class ComponentManager(object):
                     to_stage.add(component.component_name)
                     components.remove(component)
             if step:
+                step.sort()
                 staged.update(to_stage)
                 steps.append(step)
             elif components:

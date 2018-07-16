@@ -29,6 +29,9 @@ class Component(object):
         self.component_manager = component_manager
         self._running = False
 
+    def __lt__(self, other):
+        return self.component_name < other.component_name
+
     @property
     def running(self):
         return self._running
