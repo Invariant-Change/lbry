@@ -135,7 +135,7 @@ class CommandTestCase(IntegrationTestCase):
 
 class CommonWorkflowTests(CommandTestCase):
 
-    VERBOSE = True
+    VERBOSE = False
 
     @defer.inlineCallbacks
     def test_user_creating_channel_and_publishing_file(self):
