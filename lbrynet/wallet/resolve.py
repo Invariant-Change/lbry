@@ -1,6 +1,5 @@
 import logging
 
-from binascii import hexlify
 from ecdsa import BadSignatureError
 from binascii import unhexlify, hexlify
 
