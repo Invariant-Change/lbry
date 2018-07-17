@@ -94,9 +94,9 @@ class CommandTestCase(IntegrationTestCase):
         await d2f(self.account.ensure_address_gap())
         address = (await d2f(self.account.receiving.get_addresses(1, only_usable=True)))[0]
         sendtxid = await self.blockchain.send_to_address(address, 10)
-        await d2f(self.on_transaction_id(sendtxid))
+        await self.on_transaction_id(sendtxid)
         await self.blockchain.generate(1)
-        await d2f(self.on_transaction_id(sendtxid))
+        await self.on_transaction_id(sendtxid)
 
         self.daemon = Daemon(FakeAnalytics())
 
@@ -127,39 +127,33 @@ class CommandTestCase(IntegrationTestCase):
         self.daemon.file_manager = file_manager.file_manager
         self.daemon.component_manager.components.add(file_manager)
 
-    def on_transaction_id(self, txid):
-        return self.ledger.on_transaction.deferred_where(
-            lambda e: e.tx.id == txid
-        )
-
 
 class CommonWorkflowTests(CommandTestCase):
 
     VERBOSE = False
 
-    @defer.inlineCallbacks
-    def test_user_creating_channel_and_publishing_file(self):
+    async def test_user_creating_channel_and_publishing_file(self):
 
         # User checks their balance.
-        result = yield self.daemon.jsonrpc_wallet_balance(include_unconfirmed=True)
+        result = await d2f(self.daemon.jsonrpc_wallet_balance(include_unconfirmed=True))
         self.assertEqual(result, 10)
 
         # Decides to get a cool new channel.
-        channel = yield self.daemon.jsonrpc_channel_new('@spam', 1)
+        channel = await d2f(self.daemon.jsonrpc_channel_new('@spam', 1))
         self.assertTrue(channel['success'])
-        yield self.on_transaction_id(channel['txid'])
-        yield self.blockchain.generate(1)
-        yield self.on_transaction_id(channel['txid'])
+        await self.on_transaction_id(channel['txid'])
+        await self.blockchain.generate(1)
+        await self.on_transaction_id(channel['txid'])
 
         # Check balance again.
-        result = yield self.daemon.jsonrpc_wallet_balance(include_unconfirmed=True)
+        result = await d2f(self.daemon.jsonrpc_wallet_balance(include_unconfirmed=True))
         self.assertEqual(result, 8.99)
 
         # Now lets publish a hello world file to the channel.
         with tempfile.NamedTemporaryFile() as file:
             file.write(b'hello world!')
             file.flush()
-            result = yield self.daemon.jsonrpc_publish(
+            result = await d2f(self.daemon.jsonrpc_publish(
                 'foo', 1, file_path=file.name, channel_name='@spam', channel_id=channel['claim_id']
-            )
+            ))
             print(result)
