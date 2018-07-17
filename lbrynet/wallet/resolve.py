@@ -353,7 +353,8 @@ def _verify_proof(name, claim_trie_root, result, height, depth, transaction_clas
                         claim_id = result['claim_id']
                         claim_sequence = result['claim_sequence']
                         claim_script = claim_output.script
-                        decoded_name, decoded_value = claim_script.values['claim_name'].decode(), claim_script.values['claim']
+                        decoded_name = claim_script.values['claim_name'].decode()
+                        decoded_value = claim_script.values['claim']
                         if decoded_name == name:
                             return _build_response(name, decoded_value, claim_id,
                                                    tx.id, nOut, claim_output.amount,
