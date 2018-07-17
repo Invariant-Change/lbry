@@ -94,9 +94,9 @@ class CommandTestCase(IntegrationTestCase):
         await d2f(self.account.ensure_address_gap())
         address = (await d2f(self.account.receiving.get_addresses(1, only_usable=True)))[0]
         sendtxid = await self.blockchain.send_to_address(address, 10)
-        await self.on_transaction_id(sendtxid)
+        await d2f(self.on_transaction_id(sendtxid))
         await self.blockchain.generate(1)
-        await self.on_transaction_id(sendtxid)
+        await d2f(self.on_transaction_id(sendtxid))
 
         self.daemon = Daemon(FakeAnalytics())
 
@@ -127,38 +127,39 @@ class CommandTestCase(IntegrationTestCase):
         self.daemon.file_manager = file_manager.file_manager
         self.daemon.component_manager.components.add(file_manager)
 
-
-class ChannelNewCommandTests(CommandTestCase):
-
-    VERBOSE = True
-
-    @defer.inlineCallbacks
-    def test_new_channel(self):
-        result = yield self.daemon.jsonrpc_channel_new('@bar', 1*COIN)
-        self.assertTrue(result['success'])
-        yield self.ledger.on_transaction.deferred_where(
-            lambda e: e.tx.id == result['txid']
+    def on_transaction_id(self, txid):
+        return self.ledger.on_transaction.deferred_where(
+            lambda e: e.tx.id == txid
         )
 
 
-class WalletBalanceCommandTests(CommandTestCase):
+class CommonWorkflowTests(CommandTestCase):
 
     VERBOSE = True
 
     @defer.inlineCallbacks
-    def test_wallet_balance(self):
-        result = yield self.daemon.jsonrpc_wallet_balance()
-        self.assertEqual(result, 10*COIN)
+    def test_user_creating_channel_and_publishing_file(self):
 
+        # User checks their balance.
+        result = yield self.daemon.jsonrpc_wallet_balance(include_unconfirmed=True)
+        self.assertEqual(result, 10)
 
-class PublishCommandTests(CommandTestCase):
+        # Decides to get a cool new channel.
+        channel = yield self.daemon.jsonrpc_channel_new('@spam', 1)
+        self.assertTrue(channel['success'])
+        yield self.on_transaction_id(channel['txid'])
+        yield self.blockchain.generate(1)
+        yield self.on_transaction_id(channel['txid'])
 
-    VERBOSE = True
+        # Check balance again.
+        result = yield self.daemon.jsonrpc_wallet_balance(include_unconfirmed=True)
+        self.assertEqual(result, 8.99)
 
-    @defer.inlineCallbacks
-    def test_publish(self):
+        # Now lets publish a hello world file to the channel.
         with tempfile.NamedTemporaryFile() as file:
             file.write(b'hello world!')
             file.flush()
-            result = yield self.daemon.jsonrpc_publish('foo', 1, file_path=file.name)
+            result = yield self.daemon.jsonrpc_publish(
+                'foo', 1, file_path=file.name, channel_name='@spam', channel_id=channel['claim_id']
+            )
             print(result)
