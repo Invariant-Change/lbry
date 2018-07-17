@@ -1,5 +1,6 @@
 import logging
 
+from binascii import hexlify
 from ecdsa import BadSignatureError
 from binascii import unhexlify, hexlify
 
@@ -419,7 +420,7 @@ def _decode_claim_result(claim):
         decoded = smart_decode(claim['value'])
         claim_dict = decoded.claim_dict
         claim['value'] = claim_dict
-        claim['hex'] = decoded.serialized.encode('hex')
+        claim['hex'] = hexlify(decoded.serialized)
     except DecodeError:
         claim['hex'] = claim['value']
         claim['value'] = None
