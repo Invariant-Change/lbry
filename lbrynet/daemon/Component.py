@@ -13,7 +13,7 @@ class ComponentType(type):
         return klass
 
 
-class Component(object):
+class Component(object, metaclass=ComponentType):
     """
     lbrynet-daemon component helper
 
@@ -21,7 +21,6 @@ class Component(object):
     methods
     """
 
-    __metaclass__ = ComponentType
     depends_on = []
     component_name = None
 
